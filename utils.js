@@ -1,3 +1,5 @@
+import fetch from 'node-fetch';
+
 export const getGames = async url => {
   const response = await fetch(url);
 
