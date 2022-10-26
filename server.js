@@ -2,10 +2,12 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 import express from 'express';
 import cors from 'cors';
+import Stripe from 'stripe';
 
 import { getGames, getPrices } from './utils.js';
 
 const app = express();
+const stripe = new Stripe(process.env.STRIPE_PRIVATE_KEY);
 
 app.use(
   cors({
@@ -15,6 +17,8 @@ app.use(
     ],
   })
 );
+
+app.use(express.json());
 
 app.get('/games/:category', async (req, res) => {
   const { page, search } = req.query;
@@ -45,4 +49,28 @@ app.get('/prices', async (req, res) => {
   res.json(prices);
 });
 
-app.listen(3000);
+app.post('/create-checkout-session', async (req, res) => {
+  const items = req.body.map(game => ({
+    price_data: {
+      currency: 'usd',
+      product_data: { name: game.name },
+      unit_amount: +game.price * 100,
+    },
+    quantity: 1,
+  }));
+
+  try {
+    const session = await stripe.checkout.sessions.create({
+      line_items: items,
+      mode: 'payment',
+      success_url: 'https://firestore-react-1aabd.web.app',
+      cancel_url: 'https://firestore-react-1aabd.web.app',
+    });
+
+    res.json({ url: session.url });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+app.listen(process.env.PORT || 3000);
