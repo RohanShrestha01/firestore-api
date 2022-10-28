@@ -54,7 +54,7 @@ app.post('/create-checkout-session', async (req, res) => {
     price_data: {
       currency: 'usd',
       product_data: { name: game.name },
-      unit_amount: +game.price * 100,
+      unit_amount: Math.round((+game.price).toFixed(2) * 100),
     },
     quantity: 1,
   }));
