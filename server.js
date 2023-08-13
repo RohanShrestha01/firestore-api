@@ -14,6 +14,8 @@ app.use(
     origin: [
       'https://firestore-react-1aabd.web.app',
       'https://firestore-react-1aabd.firebaseapp.com',
+      'http://localhost:3000',
+      'http://localhost:5173'
     ],
   })
 );
