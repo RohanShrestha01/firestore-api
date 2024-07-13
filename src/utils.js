@@ -1,15 +1,15 @@
 import fetch from 'node-fetch';
 
-export const getGames = async url => {
+export const getGames = async (url) => {
   const response = await fetch(url);
 
   const data = await response.json();
   /* To Remove Duplicate Games Data Sent from the Server */
   const gamesData = [
-    ...new Map(data.results.map(game => [game.id, game])).values(),
+    ...new Map(data.results.map((game) => [game.id, game])).values(),
   ];
 
-  const gamesArr = gamesData.map(game => ({
+  const gamesArr = gamesData.map((game) => ({
     id: game.id,
     name: game.name,
     slug: game.slug,
@@ -26,7 +26,7 @@ export const getGames = async url => {
   return { count: data.count, games: gamesArr };
 };
 
-export const getPrices = async plains => {
+export const getPrices = async (plains) => {
   const response = await fetch(
     `https://api.isthereanydeal.com/v01/game/prices/?key=${process.env.ITAD_KEY}&plains=${plains}`
   );

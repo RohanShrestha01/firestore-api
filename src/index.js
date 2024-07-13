@@ -12,10 +12,9 @@ const stripe = new Stripe(process.env.STRIPE_PRIVATE_KEY);
 app.use(
   cors({
     origin: [
-      'https://firestore-react-1aabd.web.app',
-      'https://firestore-react-1aabd.firebaseapp.com',
+      'https://gamebazaar.netlify.app',
       'http://localhost:3000',
-      'http://localhost:5173'
+      'http://localhost:5173',
     ],
   })
 );
@@ -23,7 +22,8 @@ app.use(
 app.use(express.json());
 
 app.get('/games/:category', async (req, res) => {
-  const { page, search } = req.query;
+  const page = req.query.page ?? 1;
+  const search = req.query.search ?? '';
   const category = req.params.category;
   let url;
   if (category === 'featured')
@@ -52,7 +52,7 @@ app.get('/prices', async (req, res) => {
 });
 
 app.post('/create-checkout-session', async (req, res) => {
-  const items = req.body.map(game => ({
+  const items = req.body.map((game) => ({
     price_data: {
       currency: 'usd',
       product_data: { name: game.name },
@@ -65,8 +65,8 @@ app.post('/create-checkout-session', async (req, res) => {
     const session = await stripe.checkout.sessions.create({
       line_items: items,
       mode: 'payment',
-      success_url: 'https://firestore-react-1aabd.web.app',
-      cancel_url: 'https://firestore-react-1aabd.web.app',
+      success_url: 'https://gamebazaar.netlify.app',
+      cancel_url: 'https://gamebazaar.netlify.app',
     });
 
     res.json({ url: session.url });
@@ -76,3 +76,5 @@ app.post('/create-checkout-session', async (req, res) => {
 });
 
 app.listen(process.env.PORT || 3000);
+
+export default app;
